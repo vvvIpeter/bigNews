@@ -61,6 +61,8 @@
 
   <!-- //bootstrap里的弹出的模态框 结束 -->
 </body>
+<!-- //引入了 http.js文件  自执行函数就会执行  window里边就有了一个BigNew方法-->
+<script src="./libs/http.js"></script>
 <script>
   //入口函数
   $(function () {
@@ -79,7 +81,8 @@
       //发送ajax请求,完成登录
       $.ajax({
         type: 'post',
-        url: 'http://localhost:8080/api/v1/admin/user/login',
+        // url: 'http://localhost:8080/api/v1/admin/user/login',
+        url: window.BigNew.user_login,
         data: {
           username: userName,
           password: password
@@ -95,7 +98,7 @@
             //关闭模态框的情况下 才执行跳转代码
             $('#myModal').on('hidden.bs.modal', function (e) {
               //把服务器返回的token令牌保存起来  保存在本地
-              localStorage.setItem('token',backData.token);//键值对存起来
+              localStorage.setItem('token', backData.token);//键值对存起来
               //登录成功跳转到首页
               window.location.href = './index.html';
             });
