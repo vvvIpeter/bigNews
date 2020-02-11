@@ -38,6 +38,79 @@
     </div>
   </div>
 
+  <!-- //bootstrap里的弹出的模态框 -->
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="myModalLabel">温馨提示</h4>
+        </div>
+        <div class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">确定</button>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- //bootstrap里的弹出的模态框 结束 -->
 </body>
+<script>
+  //入口函数
+  $(function () {
+    //1登录按钮的点击事件
+    $('.input_sub').on('click', function (e) {
+      e.preventDefault();
+      //2获取用户输入的账号密码
+      var userName = $('.input_txt').val().trim();
+      var password = $('.input_pass').val().trim();
+      if (userName == "" || password == "") {
+        // alert('用户名和密码不能为空');
+        $('.modal-body').text('用户名和密码不能为空');//设置文本
+        $('#myModal').modal();//js代码弹出bootstrap模态框
+        return;
+      }
+      //发送ajax请求,完成登录
+      $.ajax({
+        type: 'post',
+        url: 'http://localhost:8080/api/v1/admin/user/login',
+        data: {
+          username: userName,
+          password: password
+        },
+        success: function (backData) {
+          console.log(backData);
+          //登录成功
+          if (backData.code == 200) {
+            //如果登录成功,跳转到index.html
+            // alert(backData.msg);
+            $('.modal-body').text(backData.msg);//设置文本
+            $('#myModal').modal();//js代码弹出bootstrap模态框
+            //关闭模态框的情况下 才执行跳转代码
+            $('#myModal').on('hidden.bs.modal', function (e) {
+              //把服务器返回的token令牌保存起来  保存在本地
+              localStorage.setItem('token',backData.token);//键值对存起来
+              //登录成功跳转到首页
+              window.location.href = './index.html';
+            });
+
+          } else {//登陆失败
+            //登录失败,提示错误
+            // alert(backData.msg);
+            $('.modal-body').text(backData.msg);//设置文本
+            $('#myModal').modal();//js代码弹出bootstrap模态框
+          }
+        }
+      })
+
+    })
+  })
+</script>
 
 </html>
