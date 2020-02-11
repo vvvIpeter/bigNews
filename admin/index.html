@@ -20,7 +20,7 @@
         <a href="#" class="logo"><img src="images/logo02.png" alt="logo"></a>
         <div class="user_info">
             <img src="images/2.jpg" alt="person">
-            <span >欢迎&nbsp;&nbsp;<i style="font-style: normal;">李四</i></span>
+            <span>欢迎&nbsp;&nbsp;<i style="font-style: normal;">李四</i></span>
             <b>管理员</b>
         </div>
         <!-- 左侧导航栏 -->
@@ -67,10 +67,19 @@
                 success: function (backData) {
                     console.log(backData);
                     //显示个人信息
-                    $('.user_info>img').attr('src',backData.data.userPic);
+                    $('.user_info>img').attr('src', backData.data.userPic);
                     $('.user_info>span>i').text(backData.data.nickname);
                     $('#myIcon').attr('src', backData.data.userPic);
                 }
+            });
+
+            //第二步  退出  相当于删除 token
+            $('.logout').on('click', function (e) {
+                e.preventDefault();//阻止a的默认跳转
+                localStorage.removeItem('token');
+                alert('退出成功');
+                window.location.href = './login.html';
+
             })
         })
     </script>
