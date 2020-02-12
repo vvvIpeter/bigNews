@@ -68,6 +68,65 @@
             </form>
         </div>
     </div>
+    <script src="./libs/http.js"></script>
+    <script>
+        //入口函数
+        $(function () {
+            //一进到就发送ajax请求  获取管理员详细信息 BigNew.
+            $.ajax({
+                type: 'get',
+                url: BigNew.user_detail,
+                success: function (backData) {
+                    console.log(backData);
+                    if (backData.code == 200) {
+                        //填写信息
+                        // $('input.username').val(backData.data.username);
+                        // $('input.nickname').val(backData.data.nickname);
+                        // $('input.email').val(backData.data.email);
+                        // $('input.password').val(backData.data.password);
+                        //可以用循环 给值 遍历backData.data
+                        for (var key in backData.data) {
+                            $('input.' + key).val(backData.data[key]);
+                        }
+                        $('img.user_pic').attr('src', backData.data.userPic);
+                    }
+                }
+            });
+
+
+            // 二:文件的预览 固定步骤
+            $('#exampleInputFile').on('change', function () {
+                var file1 = this.files[0];
+                var url = URL.createObjectURL(file1);
+                $('img.user_pic').attr('src', url);
+            });
+            //三:个人信息中的的修改
+            // 修改按钮的点击事件  发送ajax请求
+            $('.btn-edit').on('click', function (e) {
+                e.preventDefault();
+                //创建formData对象
+                var form1 = document.querySelector('form');
+                var fd1 = new FormData(form1);
+                $.ajax({
+                    type: 'post',
+                    url: BigNew.user_edit,
+                    data: fd1,
+                    contentType: false,
+                    processData: false,
+                    success: function (backData) {
+                        console.log(backData);
+                        if (backData.code == 200) {
+                            alert(backData.msg)
+                            //刷新父窗口
+                            parent.window.location.reload();
+
+                        }
+                    }
+                })
+
+            })
+        })
+    </script>
 </body>
 
 </html>
