@@ -117,8 +117,24 @@
                         console.log(backData);
                         if (backData.code == 200) {
                             alert(backData.msg)
-                            //刷新父窗口
-                            parent.window.location.reload();
+                            //第一种:刷新父窗口
+                            // parent.window.location.reload();
+                            // 第二种
+                            $.ajax({
+                                type: 'get',
+                                //带令牌
+                                // headers: {
+                                //     Authorization: localStorage.getItem('token')
+                                // },
+                                url: BigNew.user_info,
+                                success: function (backData) {
+                                    console.log(backData);
+                                    //显示个人信息
+                                    parent.$('.user_info>img').attr('src', backData.data.userPic);
+                                    parent.$('.user_info>span>i').text(backData.data.nickname);
+                                    parent.$('#myIcon').attr('src', backData.data.userPic);
+                                }
+                            });
 
                         }
                     }
