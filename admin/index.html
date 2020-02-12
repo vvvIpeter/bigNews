@@ -25,33 +25,38 @@
         </div>
         <!-- 左侧导航栏 -->
         <div class="menu">
-            <div class="level01 active"><a href="#" target="main_frame"><i
+            <div class="level01 active"><a href="./main_count.html" target="myIframe"><i
                         class="iconfont icon-yidiandiantubiao04"></i><span>首页</span></a></div>
-            <div class="level01"><a href="#"><i class="iconfont icon-icon-article"></i><span>文章管理</span><b
+            <div class="level01"><a href="./article_list.html" target="myIframe"><i
+                        class="iconfont icon-icon-article"></i><span>文章管理</span><b
                         class="iconfont icon-arrowdownl"></b></a></div>
             <ul class="level02">
-                <li><a href="#" target="main_frame"><i class="iconfont icon-previewright"></i><span>文章列表</span></a></li>
-                <li><a href="#" target="main_frame"><i class="iconfont icon-previewright"></i><span>发表文章</span></a></li>
-                <li><a href="#" target="main_frame"><i class="iconfont icon-previewright"></i><span>文章类别管理</span></a>
+                <li><a href="./article_list.html" target="myIframe"><i
+                            class="iconfont icon-previewright"></i><span>文章列表</span></a></li>
+                <li><a href="./article_release.html" target="myIframe"><i
+                            class="iconfont icon-previewright"></i><span>发表文章</span></a></li>
+                <li><a href="./article_category.html" target="myIframe"><i
+                            class="iconfont icon-previewright"></i><span>文章类别管理</span></a>
                 </li>
             </ul>
 
-            <div class="level01"><a href="#" target="main_frame"><i
+            <div class="level01"><a href="./comment_list.html" target="myIframe"><i
                         class="iconfont icon-comment"></i><span>评论管理</span></a></div>
-            <div class="level01" id="user"><a href="#" target="main_frame"><i
+            <div class="level01" id="user"><a href="./user.html" target="myIframe"><i
                         class="iconfont icon-user"></i><span>个人中心</span></a></div>
         </div>
         <!-- 顶部栏 -->
         <div class="header_bar">
             <div class="user_center_link">
-                <a href="./user.html" target="main_frame">个人中心</a>
+                <a href="./user.html" target="myIframe">个人中心</a>
                 <img src="images/2.jpg" alt="person" id="myIcon">
                 <a href="javascript:void(0)" class="logout"><i class="iconfont icon-tuichu"></i> 退出</a>
             </div>
         </div>
         <!-- 右侧主体内容 -->
         <div class="main" id="main_body">
-
+            <!-- //iframe src 已进入页面就显示 main-count.html  name是myIframe  别的target 和iframe的name值一样   -->
+            <iframe name="myIframe" src="./main_count.html" frameborder="0" style="width: 100%;height: 100%;"></iframe>
         </div>
     </div>
 
@@ -71,7 +76,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                    
+
                 </div>
             </div>
         </div>
@@ -104,12 +109,31 @@
                 $('#myModal').modal();
                 $('.modal-body').text('退出成功');
 
-               $('#myModal').on('hidden.bs.modal', function (e) {
+                $('#myModal').on('hidden.bs.modal', function (e) {
                     // do something...
-                window.location.href = './login.html';
-                
-                })
+                    window.location.href = './login.html';
 
+                })
+            })
+            //第三步:给左侧导航栏div设置点击事件  
+            $('.menu>div.level01').on('click', function () {
+                // 当前点击的div添加一个active类其他的兄弟div移出active类
+                $(this).addClass('active').siblings('div').removeClass('active');
+                //当前点击的是文章管理 div  ul 显示 隐藏
+                //通过判断下标  当前点击的是第二个
+                if ($(this).index() == 1) {
+                    $('.level02').stop(true, false).slideToggle();//隐藏就显示   显示就隐藏
+                    //给文章管理页签 后边的小三角 添加类 find 后代
+                    $(this).find('b').toggleClass('rotate0');
+
+                    //默认选中 第一个二级菜单 触发点击
+                    $('ul.level02>li:eq(0)').trigger('click');
+                }
+            })
+            //第四步:  首页左侧 文章管理里边的ul li 给三个li 设置单击事件
+            $('ul.level02>li').on('click', function () {
+                //当前点击的 添加active类 其余的兄弟标签li 移除类
+                $(this).addClass('active').siblings('li').removeClass('active');
             })
         })
     </script>
