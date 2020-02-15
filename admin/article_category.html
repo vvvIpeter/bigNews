@@ -197,6 +197,9 @@
                         if (backData.code == 200) {
                             // 手动隐藏模态框  $('#myModal').modal('hide')以及重新加载数据
                             $('#myModal').modal('hide');
+                            //清空模态框里边的内容
+                            $('#recipient-name').val("");
+                            $('#message-text').val("");
                             //刷新数据
                             getData();
                         }
