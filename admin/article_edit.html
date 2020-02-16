@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="css/reset.css">
     <link rel="stylesheet" href="css/iconfont.css">
     <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="./libs/jedate/css/jeDate-test.css">
+    <link rel="stylesheet" href="./libs/jedate/css/jedate.css">
+    <script src="./libs/jedate/js/jedate.js"></script>
+    <script src="./libs/wangEditor.js"></script>
+
     <!-- jq -->
     <script src="./libs/jquery-1.12.4.min.js"></script>
     <!-- 模板引擎 -->
@@ -34,6 +39,9 @@
                     <div class="col-sm-10">
                         <img src="images/pic06.jpg" class="article_cover">
                         <input name="cover" type="file" id="inputCover">
+                        <label for="inputCover">
+                            <img style="height: 50px;" src="./images/2.jpg" alt="">
+                        </label>
                     </div>
                 </div>
                 <div class="form-group">
@@ -50,23 +58,179 @@
                 </div>
                 <div class="form-group">
                     <label class="col-sm-2 control-label">发布时间：</label>
-                    <div class="col-sm-4">
+                    <!-- <div class="jeitem col-sm-4">
+                        <div class="jeinpbox">
+                            <input type="text" class="jeinput" id="testico" placeholder="YYYY-MM-DD">
+                            <div class="icons jebtns"
+                                onclick="jeDate('#testico',{theme:{bgcolor:'#D91600',pnColor:'#FF6653',  zIndex:20999},trigger:false,format: 'YYYY-MM-DD'})">
+                            onclick="jeDate('#testico',{zIndex:20999,trigger:false,format: 'YYYY-MM-DD'})">
+                            onclick="jeDate('#testico',{zIndex:20999,trigger:false,format: 'YYYY-MM-DD'})">
+
+                            </div>
+                        </div> -->
+                    <div class="col-sm-4 jeinpbox">
+                        <input type="text" name="date" class="jeinput" id="testico" placeholder="YYYY-MM-DD">
+                        <div class="icons jebtns"
+                            onclick="jeDate('#testico',{zIndex:20999,trigger:false,format: 'YYYY-MM-DD'})">
+                        </div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="inputEmail3" class="col-sm-2 control-label">文章内容：</label>
-                    <div class="col-sm-10">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="btn btn-success btn-edit">修改</button>
-                        <button type="submit" class="btn btn-default btn-draft">存为草稿</button>
-                    </div>
-                </div>
-            </form>
+
         </div>
+        <div class="form-group">
+            <label for="inputEmail3" class="col-sm-2 control-label">文章内容：</label>
+
+            <!-- 富文本编辑器 插件 -->
+            <div class="col-sm-10" id="editor">
+                <p>欢迎使用 <b>wangEditor</b> 富文本编辑器</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-success btn-edit">修改</button>
+                <button type="submit" class="btn btn-default btn-draft">存为草稿</button>
+            </div>
+        </div>
+        </form>
     </div>
+    </div>
+    <script src="./libs/http.js"></script>
+    <!-- 文章分类 下拉菜单的 模板引擎 -->
+    <script id="listTem" type="text/html">
+        {{each data v}}
+        <option value="{{v.id}}">{{v.name}}</option>
+        {{/each}}
+    </script>
+    <script>
+        $(function () {
+            //日期插件
+            jeDate("#testico", {
+                theme: { bgcolor: "#D91600", pnColor: "#FF6653" },//主题
+                format: "YYYY-MM-DD hh:mm:ss",
+                // isinitVal: true,  //初始化时间
+                isTime: false,
+                zIndex: 20999,
+                minDate: "2014-09-19 00:00:00",
+                //点击确定后执行的事件, 
+                //obj包含{ elem当前输入框ID, val当前选择的值, date当前的日期值}
+                // donefun: function (obj) {
+                //     console.log(obj);
+
+                // },
+            });
+
+            //富文本插件
+            var E = window.wangEditor
+            var editor = new E('#editor')
+            // 或者 var editor = new E( document.getElementById('editor') )
+            editor.create();
+            //头像预览
+            $('#inputCover').on('change', function () {
+                var file1 = this.files[0];
+                var url = URL.createObjectURL(file1);
+                $('.article_cover').attr('src', url);
+
+            })
+            //一进到文章编辑页  发送ajax请求 就显示所有的文章类别
+
+            $.ajax({
+                type: 'get',
+                url: BigNew.category_list,
+                data: {
+                    type: $('#selCategory').val(),//文章类别
+                    state: $('#selStatus').val(),//文章状态
+                    page: 1,
+                    perpage: 6
+                },
+                success: function (backData) {
+                    console.log(backData);
+                    if (backData.code == 200) {
+                        //使用模板引擎渲染到页面
+                        var resHtml = template('listTem', backData);
+                        // $('#selCategory').html(resHtml);
+                        $('.category').html(resHtml);
+                    }
+                }
+            });
+            // ------------------------------------------------------------
+            //编辑第一步
+            var articleId = window.location.search.split('=')[1];
+            console.log(articleId);
+            //根据文章id  发送ajax请求
+            setTimeout(function () {
+
+                $.ajax({
+                    type: 'get',
+                    url: BigNew.article_search,
+                    data: {
+                        id: articleId
+                    },
+                    success: function (backData) {
+                        console.log(backData);
+                        //完成信息显示
+                        if (backData.code == 200) {
+                            $('#inputTitle').val(backData.data.title);
+                            $('.article_cover').attr('src', backData.data.cover);
+                            $('select.category').val(backData.data.categoryId);
+                            $('#testico').val(backData.data.date);
+                            //富文本编辑器显示文章内容
+                            editor.txt.html(backData.data.content);
+                        }
+                    }
+                })
+
+
+            }, 0);
+
+            //编辑第二步  修改按钮的点击事件
+            $('.btn-edit').on('click', function (e) {
+                e.preventDefault();
+                var form1 = document.querySelector('form');
+                var fd = new FormData(form1);
+                fd.append('id', articleId);
+                fd.append('content', editor.txt.html());
+                fd.append('state', '已发布'),
+                    //发送ajax请求
+                    $.ajax({
+                        type: 'post',
+                        url: BigNew.article_edit,
+                        data: fd,
+                        contentType: false,
+                        processData: false,
+                        success: function (backData) {
+                            console.log(backData);
+                            window.history.back();//历史回退
+
+                        }
+                    })
+            })
+            // 修改为存草稿
+            $('.btn-draft').on('click', function (e) {
+                e.preventDefault();
+                var form1 = document.querySelector('form');
+                var fd = new FormData(form1);
+                fd.append('id', articleId);
+                fd.append('content', editor.txt.html());
+                // fd.append('state', '存为草稿'),为空默认为草稿
+                //发送ajax请求
+                $.ajax({
+                    type: 'post',
+                    url: BigNew.article_edit,
+                    data: fd,
+                    contentType: false,
+                    processData: false,
+                    success: function (backData) {
+                        console.log(backData);
+                        window.history.back();//历史回退
+                    }
+                })
+            })
+
+          
+
+
+        })
+    </script>
 </body>
 
 </html>
