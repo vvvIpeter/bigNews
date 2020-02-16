@@ -95,13 +95,14 @@
                         <td class="text-center">{{v.date}}</td>
                         <td class="text-center">{{v.state}}</td>
                         <td class="text-center">
-                            <a href="article_edit.html" class="btn btn-default btn-xs">编辑</a>
+                            <a href="article_edit.html?id={{v.id}}" class="btn btn-default btn-xs">编辑</a>
                             <a href="javascript:void(0);"  data-id={{v.id}} class="btn btn-danger btn-xs delete">删除</a>
                         </td>
                     </tr>
     {{/each}}
 </script>
     <script>
+        
         $(function () {
             // //发送ajax请求  获取所有的文章类别 通过模板引擎渲染到下拉菜单中
             //     $.ajax({
@@ -250,7 +251,7 @@
 
                             // }
                             else if (backData.data.totalPage == 0) {
-                                //隐藏分页  在分页插件里边多加了一个p标签  没有数据
+                                //隐藏分页  在分页插件里边多加了一个p标签  '没有数据'
                                 $('#pagination').hide().next().show();
                             }
                         }
