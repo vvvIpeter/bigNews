@@ -227,6 +227,74 @@
     </div>
     <!-- 导包template -->
     <script src="./js/template-web.js"></script>
+    <script id="list_temp" type="text/html">
+        {{each data.data v}}
+        <div class="common_news_list">
+                <a href="./article.html?id={{v.id}}" class="list_pic"><img src="{{v.cover}}" alt=""></a>
+                <h4><a href="./article.html?id={{v.id}}">{{v.title}} </a></h4>
+                <p>{{v.intro}}
+                </p>
+                <div class="new_info">
+                    <span>标签：{{v.category}}&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<i class="fa fa-eye"></i>&nbsp;阅读( {{v.read}}
+                        )&nbsp;&nbsp;&nbsp;<i class="fa fa-commenting"></i>&nbsp;评论( {{v.comments}} )</span>
+                    <b>发布于 {{v.date}}</b>
+                </div>
+            </div>
+        {{/each}}
+    </script>
 </body>
+<script>
+    //入口函数
+    $(function () {
+        //判断浏览器地址后边的内容  是点搜索过来的还是文章列表
+        //先判断是如何进到list页面的
+        var value1 = window.location.search.split('=')[0];//
+        var value2 = window.location.search.split('=')[1]; //id/关键字
+
+        if (value1 == '') {
+            //说明直接输入list.html网址进来的
+            //进首页
+            window.location.href = './index.html';
+        } else if (value1 == '?id') {
+            //点击文章进来的
+            //发送ajax请求
+            $.ajax({
+                type: 'get',
+                url: 'http://localhost:8080/api/v1/index/search',
+                data: {
+                    type: value2//文章类型
+                },
+                success: function (backData) {
+                    // console.log(backData);
+                    //模板引擎的渲染
+                    if (backData.data.data.length > 0) {//如果分类有内容
+                        var resHtml = template('list_temp', backData);
+                        $('.left_con').html('<div class="list_title"><h3>' + backData.data.data[0].category + '</h3></div>' + resHtml);
+                    }else{
+                        // var resHtml = template('list_temp', backData);
+                        $('.left_con').html('<div class="list_title"><h3>' + '没有数据' + '</h3></div>' );
+
+                    }
+
+                }
+            })
+
+        } else {
+            //点击搜索进来的
+            value2 = decodeURI(value2);
+            $.ajax({
+                type: 'get',
+                url: 'http://localhost:8080/api/v1/index/search',
+                data:{
+                    key:value2//搜索关键字
+                },
+                success:function(backData){
+                    var resHtml = template('list_temp', backData);
+                    $('.left_con').html('<div class="list_title"><h3>' + value2 + '</h3></div>' + resHtml);
+                }
+            })
+        }
+    })
+</script>
 
 </html>

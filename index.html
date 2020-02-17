@@ -270,16 +270,26 @@
 </script>
 <!-- 焦点关注 模板引擎 -->
 <script id="attention_temp" type="text/html">
+
+    <!--  -->
     {{each data v}}
 <li><a href="./article.html?id={{v.id}}">{{v.intro}}</a></li>
-    {{/each}}
+{{/each}}
 </script>
 <!-- 所有文章类型1 模板-->
 <script id="allAtrtical_temp1" type="text/html">
-    {{each data v}}
-    <li><a href="./list.html?id={{v.id}}">{{v.name}}</a></li>
-    {{/each}}
+    <!-- 小三角 -->
+<!-- <li class="up"></li> -->
+{{each data v}}
+<li><a href="./list.html?id={{v.id}}">{{v.name}}</a></li>
+{{/each}}
 </script>
+<!-- 所有文章类型2 模板
+<script id="allAtrtical_temp2" type="text/html">
+{{each data v}}
+<li><a href="./list.html?id={{v.id}}">{{v.name}}</a></li>
+{{/each}}
+</script> -->
 
 <script>
     $(function () {
@@ -359,14 +369,36 @@
             url: 'http://localhost:8080/api/v1/index/category',
             success: function (backData) {
                 if (backData.code == 200) {
-                    console.log(backData);
+                    // console.log(backData);
                     var resHtml = template('allAtrtical_temp1', backData);
-                    $('.level_two').html(resHtml);
+                    // var resHtml2 = template('allAtrtical_temp2', backData);
+                    // $('.level_two').html(resHtml);         
+                    $('.level_two').html('<li class="up"></li>' + resHtml);
                     $('#indexMenu').html(resHtml);
                 }
 
             }
         })
+
+        //搜索按钮的点击事件 文章搜索
+        //把用户要搜索的内容传到list页
+        $('.search_btn').on('click', function () {
+            var searchTxt = $('.search_txt').val().trim();
+            // 非空判断
+            if (searchTxt == "") {
+                alert('搜索内容不能为空');
+                return;
+            } else {
+                window.location.href = './list.html?search=' + searchTxt
+            }
+        })
+        //搜索输入框加一个键盘按下事件
+        $('.search_txt').on('keydown', function (e) {
+            if (e.keyCode == 13) {
+                $('.search_btn').click();
+            }
+        })
+
 
     })
 </script>
